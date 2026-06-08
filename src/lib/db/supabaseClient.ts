@@ -15,6 +15,12 @@ export function getSupabaseAdmin(): SupabaseClient {
   }
   cachedAdmin = createClient(url, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false },
+    global: {
+      // Next.js の data cache に Supabase のレスポンスが乗らないように
+      // 必ず最新を取得する
+      fetch: (input, init) =>
+        fetch(input, { ...init, cache: "no-store" }),
+    },
   });
   return cachedAdmin;
 }
