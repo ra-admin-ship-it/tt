@@ -122,6 +122,19 @@ git push -u origin main
 Vercel のプロジェクト設定 → `Domains` で独自ドメインを追加できます。
 DNS 設定を反映すれば、独自ドメイン + 自動 https で運用できます。
 
+### 3-4. Supabase 自動 pause 対策（Cron Keepalive）
+
+Supabase の無料プランは「1週間アクセスがない」と自動停止されます。
+本リポジトリには [`vercel.json`](vercel.json) で毎日 0:00(UTC) に `/api/cron/keepalive`
+を叩く Vercel Cron が定義されているので、Vercel 環境変数に以下を追加するだけで
+自動 pause を防げます。
+
+| Key | Value |
+| --- | --- |
+| `CRON_SECRET` | 任意の長いランダム文字列（例：`openssl rand -hex 32`） |
+
+設定後、Vercel ダッシュボード → Settings → Cron Jobs で実行履歴が確認できます。
+
 ---
 
 ## ディレクトリ構成

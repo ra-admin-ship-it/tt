@@ -3,7 +3,8 @@ import type { NextRequest } from "next/server";
 import { SESSION_COOKIE, verifySessionTokenEdge } from "@/lib/auth-edge";
 
 // 認証が不要なパス
-const PUBLIC_PATHS = ["/login", "/api/login"];
+// /api/cron/* は Vercel Cron から CRON_SECRET 付きで叩かれるため、簡易ログイン認証は通さない
+const PUBLIC_PATHS = ["/login", "/api/login", "/api/cron"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
