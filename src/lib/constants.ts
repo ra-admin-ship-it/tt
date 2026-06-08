@@ -21,25 +21,20 @@ export type Status = (typeof STATUS_OPTIONS)[number];
 
 // 対象商材の選択肢
 export const PRODUCT_OPTIONS = [
-  "採用支援",
-  "人材紹介",
-  "採用コンサルティング",
-  "採用媒体運用",
-  "スカウト代行",
+  "AccessRPO",
+  "ヤギオファー",
+  "オートハント",
+  "求人ボックス",
+  "Note記事代行",
+  "TORERU",
+  "Wantedly運用",
+  "アボネクト",
+  "成果報酬型求人ボックス運用",
+  "セカオピ",
+  "採用LP制作",
+  "RPO",
   "HP制作",
-  "LP制作",
-  "採用サイト制作",
-  "動画制作",
-  "YouTube運用",
-  "TikTok運用",
-  "SNS運用",
-  "営業支援",
-  "営業代行",
-  "業務効率化ツール開発",
-  "社内管理ツール開発",
-  "CRM導入支援",
-  "HubSpot導入支援",
-  "その他",
+  "その他（自由入力）",
 ] as const;
 export type Product = (typeof PRODUCT_OPTIONS)[number];
 
