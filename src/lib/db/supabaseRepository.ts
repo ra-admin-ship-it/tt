@@ -143,6 +143,7 @@ function rowToCompany(r: any): Company {
       r.subsidy_proposal_status,
       SUBSIDY_PROPOSAL_OPTIONS
     ),
+    proposal_owner: r.proposal_owner ?? null,
 
     // ⑥
     subsidy_hearing_memo: r.subsidy_hearing_memo ?? null,

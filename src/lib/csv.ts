@@ -75,6 +75,7 @@ export const CSV_COLUMNS = [
   "坪田先生一次判定",
   "判定理由",
   "補助金提案可否",
+  "提案担当者",
 
   // ⑥ 商談メモ
   "補助金ヒアリングメモ",
@@ -149,6 +150,7 @@ export function companiesToCsv(companies: Company[]): Buffer {
     坪田先生一次判定: c.screening_first_judgment ?? "",
     判定理由: c.judgment_reason ?? "",
     補助金提案可否: c.subsidy_proposal_status ?? "",
+    提案担当者: c.proposal_owner ?? "",
 
     補助金ヒアリングメモ: c.subsidy_hearing_memo ?? "",
     特記事項: c.special_notes ?? "",
@@ -269,6 +271,7 @@ export type CsvRowParsed = {
   screening_first_judgment: ScreeningFirstJudgment | null;
   judgment_reason: string | null;
   subsidy_proposal_status: SubsidyProposalStatus | null;
+  proposal_owner: string | null;
 
   subsidy_hearing_memo: string | null;
   special_notes: string | null;
@@ -330,6 +333,7 @@ export function normalizeCsvRow(row: Record<string, string>): {
       screening_first_judgment: pickOptionOrNull(row["坪田先生一次判定"], SCREENING_FIRST_JUDGMENT_OPTIONS),
       judgment_reason: (row["判定理由"] ?? "").trim() || null,
       subsidy_proposal_status: pickOptionOrNull(row["補助金提案可否"], SUBSIDY_PROPOSAL_OPTIONS),
+      proposal_owner: (row["提案担当者"] ?? "").trim() || null,
 
       subsidy_hearing_memo: (row["補助金ヒアリングメモ"] ?? "").trim() || null,
       special_notes: (row["特記事項"] ?? "").trim() || null,

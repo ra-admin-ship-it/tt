@@ -98,6 +98,7 @@ export const companyInputSchema = z.object({
     .nullable()
     .optional()
     .transform((v) => v ?? null),
+  proposal_owner: optionalText,
 
   // ⑥ 商談メモ
   subsidy_hearing_memo: optionalText,

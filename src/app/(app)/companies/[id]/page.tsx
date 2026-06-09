@@ -139,6 +139,7 @@ export default async function CompanyDetailPage({ params }: { params: { id: stri
               ) : "—"}
             </Row>
             <Row label="補助金提案可否">{c.subsidy_proposal_status || "—"}</Row>
+            <Row label="提案担当者">{c.proposal_owner || "—"}</Row>
             <Row label="判定理由">
               <p className="whitespace-pre-wrap">{c.judgment_reason || "—"}</p>
             </Row>

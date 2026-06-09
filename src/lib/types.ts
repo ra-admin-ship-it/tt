@@ -64,6 +64,7 @@ export type Company = {
   screening_first_judgment: ScreeningFirstJudgment | null; // 坪田先生一次判定
   judgment_reason: string | null;                          // 判定理由
   subsidy_proposal_status: SubsidyProposalStatus | null;   // 補助金提案可否
+  proposal_owner: string | null;                           // 提案担当者
 
   // 大分類⑥ 商談メモ
   subsidy_hearing_memo: string | null;                     // 補助金ヒアリングメモ

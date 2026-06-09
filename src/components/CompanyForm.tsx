@@ -81,6 +81,7 @@ type FormState = {
   screening_first_judgment: ScreeningFirstJudgment | "";
   judgment_reason: string;
   subsidy_proposal_status: SubsidyProposalStatus | "";
+  proposal_owner: string;
 
   // ⑥
   subsidy_hearing_memo: string;
@@ -145,6 +146,7 @@ function toForm(c?: Company | null): FormState {
     screening_first_judgment: c?.screening_first_judgment ?? "",
     judgment_reason: c?.judgment_reason ?? "",
     subsidy_proposal_status: c?.subsidy_proposal_status ?? "",
+    proposal_owner: c?.proposal_owner ?? "",
 
     subsidy_hearing_memo: c?.subsidy_hearing_memo ?? "",
     special_notes: c?.special_notes ?? "",
@@ -198,6 +200,7 @@ function toPayload(s: FormState) {
     screening_first_judgment: s.screening_first_judgment || null,
     judgment_reason: s.judgment_reason || null,
     subsidy_proposal_status: s.subsidy_proposal_status || null,
+    proposal_owner: s.proposal_owner.trim() || null,
 
     subsidy_hearing_memo: s.subsidy_hearing_memo || null,
     special_notes: s.special_notes || null,
@@ -477,6 +480,10 @@ export function CompanyForm({
               <option value="">未選択</option>
               {SUBSIDY_PROPOSAL_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
             </select>
+          </div>
+          <div>
+            <label className="label">提案担当者</label>
+            <input className="input" value={state.proposal_owner} onChange={(e) => update("proposal_owner", e.target.value)} placeholder="氏名" />
           </div>
           <div className="md:col-span-3">
             <label className="label">判定理由</label>
