@@ -6,14 +6,54 @@ import type {
   CompanyInput,
 } from "@/lib/types";
 import {
+  DESIRED_SUBSIDY_TYPE_OPTIONS,
+  EMPLOYMENT_CONTINUATION_OPTIONS,
+  EMPLOYMENT_TYPE_OPTIONS,
+  FINANCIAL_DOC_OPTIONS,
+  LABOR_COST_JUDGMENT_OPTIONS,
+  PERMANENT_EMPLOYEE_OPTIONS,
   PRODUCT_OPTIONS,
+  REVENUE_SCALE_OPTIONS,
+  SALARY_ACCOUNT_OPTIONS,
+  SCREENING_FIRST_JUDGMENT_OPTIONS,
   STATUS_OPTIONS,
+  SUBSIDY_JUDGMENT_OPTIONS,
   SUBSIDY_LIKELIHOOD_OPTIONS,
+  SUBSIDY_PROPOSAL_OPTIONS,
+  SUBSIDY_PURPOSE_OPTIONS,
+  type DesiredSubsidyType,
+  type EmploymentContinuation,
+  type EmploymentType,
+  type FinancialDocStatus,
+  type LaborCostJudgment,
+  type PermanentEmployee,
   type Product,
+  type RevenueScale,
+  type SalaryAccountStatus,
+  type ScreeningFirstJudgment,
   type Status,
+  type SubsidyJudgment,
   type SubsidyLikelihood,
+  type SubsidyProposalStatus,
+  type SubsidyPurpose,
 } from "@/lib/constants";
 import { getSupabaseAdmin } from "./supabaseClient";
+
+// 配列フィルタの共通ヘルパー
+function filterAllowed<T extends string>(arr: any[], allow: readonly T[]): T[] {
+  const set = new Set(allow);
+  return (arr ?? []).filter(
+    (v): v is T => typeof v === "string" && (set as Set<string>).has(v)
+  );
+}
+
+function asOption<T extends string>(v: any, allow: readonly T[], fallback: T): T {
+  return (allow as readonly string[]).includes(v) ? (v as T) : fallback;
+}
+
+function asOptionOrNull<T extends string>(v: any, allow: readonly T[]): T | null {
+  return (allow as readonly string[]).includes(v) ? (v as T) : null;
+}
 
 // DBの行（生）→ Company（ドメイン型）への正規化
 function rowToCompany(r: any): Company {
@@ -25,40 +65,117 @@ function rowToCompany(r: any): Company {
     head_area: r.head_area ?? null,
     head_address: r.head_address ?? null,
     postal_code: r.postal_code ?? null,
-    current_products: filterProducts(r.current_products ?? []),
+    current_products: filterAllowed<Product>(r.current_products ?? [], PRODUCT_OPTIONS),
+
     is_subsidy_flag: !!r.is_subsidy_flag,
-    subsidy_likelihood: asLikelihood(r.subsidy_likelihood),
-    target_products: filterProducts(r.target_products ?? []),
+    subsidy_likelihood: asOption<SubsidyLikelihood>(
+      r.subsidy_likelihood,
+      SUBSIDY_LIKELIHOOD_OPTIONS,
+      "未確認"
+    ),
+    target_products: filterAllowed<Product>(r.target_products ?? [], PRODUCT_OPTIONS),
+
+    // ①
+    subsidy_judgment: asOption<SubsidyJudgment>(
+      r.subsidy_judgment,
+      SUBSIDY_JUDGMENT_OPTIONS,
+      "未確認"
+    ),
+    permanent_employee: asOption<PermanentEmployee>(
+      r.permanent_employee,
+      PERMANENT_EMPLOYEE_OPTIONS,
+      "不明"
+    ),
+    employment_continuation: asOption<EmploymentContinuation>(
+      r.employment_continuation,
+      EMPLOYMENT_CONTINUATION_OPTIONS,
+      "不明"
+    ),
+    employment_types: filterAllowed<EmploymentType>(
+      r.employment_types ?? [],
+      EMPLOYMENT_TYPE_OPTIONS
+    ),
+
+    // ②
+    financial_doc_status: asOption<FinancialDocStatus>(
+      r.financial_doc_status,
+      FINANCIAL_DOC_OPTIONS,
+      "未依頼"
+    ),
+    revenue_recent: r.revenue_recent ?? null,
+    revenue_2periods_ago: r.revenue_2periods_ago ?? null,
+    revenue_3periods_ago: r.revenue_3periods_ago ?? null,
+    revenue_scale: asOptionOrNull<RevenueScale>(r.revenue_scale, REVENUE_SCALE_OPTIONS),
+
+    // ③
+    salary_account_status: asOption<SalaryAccountStatus>(
+      r.salary_account_status,
+      SALARY_ACCOUNT_OPTIONS,
+      "未確認"
+    ),
+    salary_account_name: r.salary_account_name ?? null,
+    labor_cost_annual: r.labor_cost_annual ?? null,
+    outsourcing_cost_annual: r.outsourcing_cost_annual ?? null,
+    labor_cost_judgment: asOptionOrNull<LaborCostJudgment>(
+      r.labor_cost_judgment,
+      LABOR_COST_JUDGMENT_OPTIONS
+    ),
+
+    // ④
+    desired_subsidy_types: filterAllowed<DesiredSubsidyType>(
+      r.desired_subsidy_types ?? [],
+      DESIRED_SUBSIDY_TYPE_OPTIONS
+    ),
+    desired_subsidy_amount: r.desired_subsidy_amount ?? null,
+    planned_investment_amount: r.planned_investment_amount ?? null,
+    subsidy_purposes: filterAllowed<SubsidyPurpose>(
+      r.subsidy_purposes ?? [],
+      SUBSIDY_PURPOSE_OPTIONS
+    ),
+
+    // ⑤
+    screening_first_judgment: asOptionOrNull<ScreeningFirstJudgment>(
+      r.screening_first_judgment,
+      SCREENING_FIRST_JUDGMENT_OPTIONS
+    ),
+    judgment_reason: r.judgment_reason ?? null,
+    subsidy_proposal_status: asOptionOrNull<SubsidyProposalStatus>(
+      r.subsidy_proposal_status,
+      SUBSIDY_PROPOSAL_OPTIONS
+    ),
+
+    // ⑥
+    subsidy_hearing_memo: r.subsidy_hearing_memo ?? null,
+    special_notes: r.special_notes ?? null,
+
+    // 既存・対応情報
     next_action: r.next_action ?? null,
     owner: r.owner ?? null,
-    status: asStatus(r.status),
+    status: asOption<Status>(r.status, STATUS_OPTIONS, "未対応"),
     memo: r.memo ?? null,
     last_contact_at: r.last_contact_at ?? null,
     next_action_at: r.next_action_at ?? null,
     hubspot_company_id: r.hubspot_company_id ?? null,
+
     created_at: r.created_at,
     updated_at: r.updated_at,
   };
 }
 
-function filterProducts(arr: any[]): Product[] {
-  const allow = new Set(PRODUCT_OPTIONS as readonly string[]);
-  return arr.filter((v): v is Product => typeof v === "string" && allow.has(v));
-}
-function asLikelihood(v: any): SubsidyLikelihood {
-  return (SUBSIDY_LIKELIHOOD_OPTIONS as readonly string[]).includes(v)
-    ? (v as SubsidyLikelihood)
-    : "未確認";
-}
-function asStatus(v: any): Status {
-  return (STATUS_OPTIONS as readonly string[]).includes(v) ? (v as Status) : "未対応";
+// Company の入力 → DBへのINSERT/UPDATE用ペイロード（フィールドはそのままでもOKだが明示）
+function toRow(input: Partial<CompanyInput>): Record<string, unknown> {
+  // 不要なundefinedプロパティを取り除いて返す
+  const row: Record<string, unknown> = { ...input };
+  for (const key of Object.keys(row)) {
+    if (row[key] === undefined) delete row[key];
+  }
+  return row;
 }
 
 function buildSelectQuery(filter: CompanyFilter) {
   const supabase = getSupabaseAdmin();
   let query = supabase.from("companies").select("*").order("updated_at", { ascending: false });
   if (filter.q) {
-    // 部分一致（ILIKEで大文字小文字区別なし）
     query = query.ilike("name", `%${filter.q}%`);
   }
   if (filter.corporate_number) {
@@ -70,7 +187,6 @@ function buildSelectQuery(filter: CompanyFilter) {
   if (filter.status) query = query.eq("status", filter.status);
   if (filter.owner) query = query.eq("owner", filter.owner);
   if (filter.product) {
-    // target_products text[] に対する contains 検索
     query = query.contains("target_products", [filter.product]);
   }
   return query;
@@ -118,25 +234,7 @@ export async function createCompany(input: CompanyInput): Promise<Company> {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("companies")
-    .insert({
-      corporate_number: input.corporate_number,
-      name: input.name,
-      employee_count: input.employee_count,
-      head_area: input.head_area,
-      head_address: input.head_address,
-      postal_code: input.postal_code,
-      current_products: input.current_products,
-      is_subsidy_flag: input.is_subsidy_flag,
-      subsidy_likelihood: input.subsidy_likelihood,
-      target_products: input.target_products,
-      next_action: input.next_action,
-      owner: input.owner,
-      status: input.status,
-      memo: input.memo,
-      last_contact_at: input.last_contact_at,
-      next_action_at: input.next_action_at,
-      hubspot_company_id: input.hubspot_company_id,
-    })
+    .insert(toRow(input))
     .select("*")
     .single();
   if (error) throw error;
@@ -156,7 +254,7 @@ export async function updateCompany(
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("companies")
-    .update(input)
+    .update(toRow(input))
     .eq("id", id)
     .select("*")
     .maybeSingle();
@@ -173,13 +271,10 @@ export async function updateCompany(
 
 export async function deleteCompany(id: string): Promise<boolean> {
   const supabase = getSupabaseAdmin();
-  // ログ用に名前を取得
   const target = await getCompany(id);
   if (!target) return false;
   const { error } = await supabase.from("companies").delete().eq("id", id);
   if (error) throw error;
-  // companies削除時にcascadeでactivity_logsも消えるため、削除ログは別途残せない
-  // 必要なら別テーブルに保存する設計に変更可能
   return true;
 }
 

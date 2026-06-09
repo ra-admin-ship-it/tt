@@ -51,6 +51,117 @@ export const PREFECTURE_OPTIONS = [
 ] as const;
 export type Prefecture = (typeof PREFECTURE_OPTIONS)[number];
 
+// ===== 補助金スクリーニング用の追加選択肢 =====
+
+// 補助金対象判定（自動更新用）
+export const SUBSIDY_JUDGMENT_OPTIONS = [
+  "未確認",
+  "対象可能性あり",
+  "対象外",
+  "要確認",
+] as const;
+export type SubsidyJudgment = (typeof SUBSIDY_JUDGMENT_OPTIONS)[number];
+
+// 常用雇用者有無
+export const PERMANENT_EMPLOYEE_OPTIONS = ["あり", "なし", "不明"] as const;
+export type PermanentEmployee = (typeof PERMANENT_EMPLOYEE_OPTIONS)[number];
+
+// 常用雇用継続期間
+export const EMPLOYMENT_CONTINUATION_OPTIONS = ["1年以上", "1年未満", "不明"] as const;
+export type EmploymentContinuation = (typeof EMPLOYMENT_CONTINUATION_OPTIONS)[number];
+
+// 雇用形態（複数選択）
+export const EMPLOYMENT_TYPE_OPTIONS = [
+  "正社員",
+  "契約社員",
+  "パート",
+  "アルバイト",
+  "業務委託のみ",
+] as const;
+export type EmploymentType = (typeof EMPLOYMENT_TYPE_OPTIONS)[number];
+
+// 決算書提出状況
+export const FINANCIAL_DOC_OPTIONS = [
+  "未依頼",
+  "依頼済",
+  "1期受領",
+  "3期受領",
+  "受領不可",
+] as const;
+export type FinancialDocStatus = (typeof FINANCIAL_DOC_OPTIONS)[number];
+
+// 売上規模区分
+export const REVENUE_SCALE_OPTIONS = [
+  "〜1,000万円",
+  "1,000万〜3,000万円",
+  "3,000万〜5,000万円",
+  "5,000万〜1億円",
+  "1億円以上",
+] as const;
+export type RevenueScale = (typeof REVENUE_SCALE_OPTIONS)[number];
+
+// 給与科目有無
+export const SALARY_ACCOUNT_OPTIONS = ["あり", "なし", "未確認"] as const;
+export type SalaryAccountStatus = (typeof SALARY_ACCOUNT_OPTIONS)[number];
+
+// 人件費判定
+export const LABOR_COST_JUDGMENT_OPTIONS = [
+  "給与計上あり",
+  "外注中心",
+  "判定保留",
+] as const;
+export type LaborCostJudgment = (typeof LABOR_COST_JUDGMENT_OPTIONS)[number];
+
+// 希望補助金種別（複数選択）
+export const DESIRED_SUBSIDY_TYPE_OPTIONS = [
+  "持続化補助金",
+  "ものづくり補助金",
+  "事業再構築補助金",
+  "IT導入補助金",
+  "省力化補助金",
+  "その他",
+] as const;
+export type DesiredSubsidyType = (typeof DESIRED_SUBSIDY_TYPE_OPTIONS)[number];
+
+// 補助金活用目的（複数選択）
+export const SUBSIDY_PURPOSE_OPTIONS = [
+  "採用",
+  "設備投資",
+  "システム導入",
+  "広告宣伝",
+  "新規事業",
+  "その他",
+] as const;
+export type SubsidyPurpose = (typeof SUBSIDY_PURPOSE_OPTIONS)[number];
+
+// 坪田先生一次判定
+export const SCREENING_FIRST_JUDGMENT_OPTIONS = [
+  "A：提案推奨",
+  "B：条件付き提案",
+  "C：情報不足",
+  "D：対象外",
+] as const;
+export type ScreeningFirstJudgment = (typeof SCREENING_FIRST_JUDGMENT_OPTIONS)[number];
+
+// 補助金提案可否
+export const SUBSIDY_PROPOSAL_OPTIONS = ["提案可能", "提案保留", "提案不可"] as const;
+export type SubsidyProposalStatus = (typeof SUBSIDY_PROPOSAL_OPTIONS)[number];
+
+// 一次判定の色分け
+export const SCREENING_BADGE_CLASS: Record<ScreeningFirstJudgment, string> = {
+  "A：提案推奨": "bg-emerald-100 text-emerald-800 border-emerald-200",
+  "B：条件付き提案": "bg-amber-100 text-amber-800 border-amber-200",
+  "C：情報不足": "bg-slate-100 text-slate-700 border-slate-200",
+  "D：対象外": "bg-rose-100 text-rose-800 border-rose-200",
+};
+
+export const SUBSIDY_JUDGMENT_BADGE_CLASS: Record<SubsidyJudgment, string> = {
+  未確認: "bg-gray-100 text-gray-600 border-gray-200",
+  対象可能性あり: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  対象外: "bg-rose-100 text-rose-800 border-rose-200",
+  要確認: "bg-amber-100 text-amber-800 border-amber-200",
+};
+
 // 補助金対象可能性ごとの色（Tailwindクラス）
 export const LIKELIHOOD_BADGE_CLASS: Record<SubsidyLikelihood, string> = {
   高: "bg-red-100 text-red-800 border-red-200",
